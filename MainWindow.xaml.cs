@@ -1,33 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MiniTappsk.ViewModels;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+
 
 namespace TinyTask
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+        private MainViewModel ViewModel => (MainViewModel)DataContext;
+
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new MainViewModel();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void AddButton_Click(object sender, RoutedEventArgs e)
         {
+            ViewModel.StartNewTask();
+            StartView.Visibility = Visibility.Collapsed;
+            NewTaskView.Visibility = Visibility.Visible;
+        }
 
+        private void CancelNewTask_Click(object sender, RoutedEventArgs e)
+        {
+            NewTaskView.Visibility = Visibility.Collapsed;
+            StartView.Visibility = Visibility.Visible;
+        }
+
+        private void SaveNewTask_Click(object sender, RoutedEventArgs e)
+        {
+            if (!ViewModel.AddNewTask())
+            {
+                MessageBox.Show("Bitte gib einen Titel für die Aufgabe ein.",
+                    "Hinweis",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+                return;
+            }
+
+            NewTaskView.Visibility = Visibility.Collapsed;
+            StartView.Visibility = Visibility.Visible;
         }
     }
 }

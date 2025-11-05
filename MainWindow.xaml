@@ -3,11 +3,291 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TinyTask"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <Button Content="Button" HorizontalAlignment="Left" Height="61" Margin="138,156,0,0" VerticalAlignment="Top" Width="127" Click="Button_Click"/>
+        Title="TinyTask"
+        Height="650" Width="360"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="#FFE0E0E0">
 
-    </Grid>
+    <Border Margin="10"
+            CornerRadius="30"
+            Background="#FF353535">
+        <Grid>
+
+            <!-- Startscreen -->
+            <Grid x:Name="StartView">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Top bar -->
+                <Grid Grid.Row="0" Margin="20,20,20,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation="Horizontal" Grid.Column="0">
+                        <Ellipse Width="22" Height="22" Stroke="LightGray" StrokeThickness="2" Margin="0,0,10,0"/>
+                        <Ellipse Width="22" Height="22" Stroke="LightGray" StrokeThickness="2" Margin="0,0,10,0"/>
+                        <Ellipse Width="22" Height="22" Stroke="LightGray" StrokeThickness="2"/>
+                    </StackPanel>
+
+                    <Border Grid.Column="1"
+                            Width="22" Height="22"
+                            BorderBrush="LightGray"
+                            BorderThickness="2"
+                            CornerRadius="3"/>
+                </Grid>
+
+                <!-- Mitte: Heute / Morgen / Diese Woche -->
+                <ScrollViewer Grid.Row="1" Margin="30,10,30,10" VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+
+                        <!-- Heute -->
+                        <TextBlock Text="Heute"
+                                   FontSize="26"
+                                   FontWeight="Bold"
+                                   Foreground="#FF4BA3FF"
+                                   Margin="0,0,0,4"/>
+                        <ItemsControl ItemsSource="{Binding TodayTasks}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                        <Border Width="16" Height="16"
+                                                BorderBrush="#FFCC5555"
+                                                BorderThickness="2"
+                                                CornerRadius="2"
+                                                Margin="0,2,6,0"/>
+                                        <TextBlock Text="{Binding Title}"
+                                                   Foreground="White"
+                                                   FontSize="14"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Morgen -->
+                        <TextBlock Text="Morgen"
+                                   FontSize="26"
+                                   FontWeight="Bold"
+                                   Foreground="#FF4BA3FF"
+                                   Margin="0,20,0,4"/>
+                        <ItemsControl ItemsSource="{Binding TomorrowTasks}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                        <Border Width="16" Height="16"
+                                                BorderBrush="#FFCC5555"
+                                                BorderThickness="2"
+                                                CornerRadius="2"
+                                                Margin="0,2,6,0"/>
+                                        <TextBlock Text="{Binding Title}"
+                                                   Foreground="White"
+                                                   FontSize="14"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Diese Woche -->
+                        <TextBlock Text="Diese Woche"
+                                   FontSize="26"
+                                   FontWeight="Bold"
+                                   Foreground="#FFB0B0B0"
+                                   Margin="0,20,0,4"/>
+                        <ItemsControl ItemsSource="{Binding ThisWeekTasks}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                        <Border Width="16" Height="16"
+                                                BorderBrush="#FFCC5555"
+                                                BorderThickness="2"
+                                                CornerRadius="2"
+                                                Margin="0,2,6,0"/>
+                                        <TextBlock Text="{Binding Title}"
+                                                   Foreground="White"
+                                                   FontSize="14"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- + Button unten rechts -->
+                <Button Grid.Row="2"
+                        Width="46" Height="46"
+                        Margin="0,0,30,20"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Click="AddButton_Click">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Grid>
+                                <Ellipse Stroke="White" StrokeThickness="2"/>
+                                <TextBlock Text="+"
+                                           FontSize="26"
+                                           Foreground="White"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+            </Grid>
+
+            <!-- Neuer Task Screen -->
+            <Grid x:Name="NewTaskView" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0"
+                           Text="Neue Aufgabe"
+                           Margin="30,20,0,10"
+                           FontSize="22"
+                           FontWeight="Bold"
+                           Foreground="White"/>
+
+                <StackPanel Grid.Row="1"
+                            Margin="30,10,30,10"
+                            VerticalAlignment="Top">
+
+                    <!-- Aufgaben / Titel -->
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="📝"
+                                   FontSize="20"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,10,0"/>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Aufgaben"
+                                       Foreground="White"
+                                       FontSize="14"/>
+                            <TextBox Text="{Binding NewTitle, UpdateSourceTrigger=PropertyChanged}"
+                                     Height="26"
+                                     Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Notizen -->
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="📝"
+                                   FontSize="20"
+                                   VerticalAlignment="Top"
+                                   Margin="0,0,10,0"/>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Notizen"
+                                       Foreground="White"
+                                       FontSize="14"/>
+                            <TextBox Text="{Binding NewNotes}"
+                                     Margin="0,4,0,0"
+                                     Height="60"
+                                     TextWrapping="Wrap"
+                                     AcceptsReturn="True"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Datum -->
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="📅"
+                                   FontSize="20"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,10,0"/>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Datum"
+                                       Foreground="White"
+                                       FontSize="14"/>
+                            <DatePicker SelectedDate="{Binding NewDueDate}"
+                                        Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Erinnerung -->
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="⏰"
+                                   FontSize="20"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,10,0"/>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Erinnerung (Datum)"
+                                       Foreground="White"
+                                       FontSize="14"/>
+                            <DatePicker SelectedDate="{Binding NewReminderDate}"
+                                        Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Wiederkehrend -->
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="🔁"
+                                   FontSize="20"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,10,0"/>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Als wiederkehrend einstellen"
+                                       Foreground="White"
+                                       FontSize="14"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                <CheckBox IsChecked="{Binding NewIsRecurring}"
+                                          VerticalAlignment="Center"
+                                          Margin="0,0,8,0"/>
+                                <ComboBox ItemsSource="{Binding RecurrenceTypes}"
+                                          SelectedItem="{Binding NewRecurrenceType}"
+                                          Width="120"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+
+                </StackPanel>
+
+                <!-- Buttons unten -->
+                <StackPanel Grid.Row="2"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            Margin="0,0,30,20">
+                    <Button Content="Abbrechen"
+                            Width="90"
+                            Margin="0,0,10,0"
+                            Click="CancelNewTask_Click"/>
+                    <Button Content="Speichern"
+                            Width="90"
+                            Click="SaveNewTask_Click"/>
+                </StackPanel>
+            </Grid>
+
+        </Grid>
+    </Border>
 </Window>
