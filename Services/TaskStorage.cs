@@ -27,7 +27,7 @@ namespace MiniTappsk.Services
             }
             catch
             {
-                // Im Fehlerfall einfach leere Liste
+                
                 return new List<TodoTask>();
             }
         }
@@ -45,7 +45,7 @@ namespace MiniTappsk.Services
             }
             catch
             {
-                // hier könntest du Logging einbauen
+                
             }
         }
     }
